@@ -11,17 +11,22 @@ A Node.JS program that turns an image from a path into an escpos-printable image
 
 ```javascript
 // Import the package
-const escposImageProcessor = require("escpos-image-processor");
+const ESCPOSImageProcessor = require("escpos-image-processor");
 
-// Put the path to your image in the first parameter (.in.png) and put the location where the image should be saved in the second parameter (./processed.png).
-escposImageProcessor.convert("./in.png", "./processed.png", path => {
+// Create an instance of the class
+const processor = new ESCPOSImageProcessor({
+    width: 185 /* optional, defaults to 185 (default 40mm printer roll width in px) */
+});
+
+// Put the path to your image in the first parameter (".in.png") and put the location where the image should be saved in the second parameter ("./processed.png").
+processor.convert("./in.png", "./processed.png", path => {
     // The callback will return the path if all went well, if there was an error it will return 'false'.
     if(path) {
         console.log(`Processed image saved to ${path}`);
     } else {
         console.log("An Error Occurred");
     }
-})
+});
 ```
 ## Usage with `escpos`
 
@@ -32,19 +37,19 @@ const escpos = require("escpos");
 const device  = new escpos.USB();
 const printer = new escpos.Printer(device);
 
-const escposImageProcessor = require("escpos-image-processor");
+const ESCPOSImageProcessor = require("escpos-image-processor");
 
-escposImageProcessor.convert("./in.png", "./processed.png", path => {
+const processor = new ESCPOSImageProcessor({
+    width: 185
+});
+
+processor.convert("./in.png", "./processed.png", path => {
     if(path) {
-        console.log(`Processed image saved to ${path}`);
+        console.log(`Processed image saved to ${path}, printing...`);
 
-        escpos.Image.load(path, image => {
-            device.open(() => {
-                printer.align("lt").raster(image, "dwdh").cut().close();
-            });
-        });
+        processor.print(device, printer);
     } else {
         console.log("An Error Occurred");
     }
-})
+});
 ```
