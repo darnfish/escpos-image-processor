@@ -23,3 +23,28 @@ escposImageProcessor.convert("./in.png", "./processed.png", path => {
     }
 })
 ```
+## Usage with `escpos`
+
+If you wish to use `escpos-image-processor` with the `escpos` module, look at the example below:
+
+```javascript
+const escpos = require("escpos");
+const device  = new escpos.USB();
+const printer = new escpos.Printer(device);
+
+const escposImageProcessor = require("escpos-image-processor");
+
+escposImageProcessor.convert("./in.png", "./processed.png", path => {
+    if(path) {
+        console.log(`Processed image saved to ${path}`);
+
+        escpos.Image.load(path, image => {
+            device.open(() => {
+                printer.align("lt").raster(image, "dwdh").cut().close();
+            });
+        });
+    } else {
+        console.log("An Error Occurred");
+    }
+})
+```
