@@ -1,6 +1,12 @@
 # escpos-image-processor
 A Node.JS program that turns an image from a path into an escpos-printable image.
 
+## Installation
+
+`escpos-image-processor` is available through NPM:
+
+```npm install escpos-image-processor --save```
+
 ## Usage
 
 ```javascript
