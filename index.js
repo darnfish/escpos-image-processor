@@ -21,7 +21,9 @@ class ESCPOSImageProcessor {
         }
 
         this.hasConverted = false;
+        this.hasResized = false;
         this.path = "";
+        this.processID = this.genProcessID();
     }
 
     /**
@@ -47,47 +49,96 @@ class ESCPOSImageProcessor {
      */
     convert(path, out, callback) {
         this.path = out;
+        this.hasResized = false;
 
-        Image.load(path).then(img => {
-            const threshold = 30;
+        Jimp.read(path).then(oImg => {
 
-            const edge = cannyEdgeDetector(img.grey(), {
-                lowThreshold: threshold,
-                highThreshold: threshold,
-                gaussianBlur: threshold / 10
-            });
+            if(this.options.quality == "good") {
+                let ratio = this.getRatio(oImg);
+
+                oImg.resize(ratio.w, ratio.h);
+                this.hasResized = true;
+            }
+
+            const orgPath = `./${this.processID}-org.png`;
+            oImg.write(orgPath, () => {
+                Image.load(orgPath).then(img => {
+                    fs.unlinkSync(orgPath);
+                    const threshold = 30;
         
-            edge.save("./edges.png").then(() => {
-                replaceColor({
-                    image: "./edges.png",
-                    colors: {
-                        type: "hex",
-                        targetColor: "#000000",
-                        replaceColor: "#00000000"
-                    }
-                }, (err1, eImg) => {
-                    fs.unlink("./edges.png");
-                    if(!err1) {
-                        let ratio = {
-                            w: eImg.getWidth(),
-                            h: eImg.getHeight()
-                        };
-                    
-                        let w = this.options.width || 185;
-                        let h = w * (ratio.h / ratio.w);
-        
-                        eImg.invert().resize(w, h).write(out, () => {
-                            this.hasConverted = true;
-                            callback(path);
-                        });
-                    } else {
+                    const edge = cannyEdgeDetector(img.grey(), {
+                        lowThreshold: threshold,
+                        highThreshold: threshold,
+                        gaussianBlur: threshold / 10
+                    });
+                
+                    const edgePath = `./${this.processID}-edges.png`;
+                    edge.save(edgePath).then(() => {
+                        replaceColor({
+                            image: edgePath,
+                            colors: {
+                                type: "hex",
+                                targetColor: "#000000",
+                                replaceColor: "#00000000"
+                            }
+                        }, (err2, eImg) => {
+                            fs.unlinkSync(edgePath);
+                            if(!err2) {
+                                eImg.invert();
+
+                                if(this.options.quality == "best" || !this.hasResized) {
+                                    let ratio = this.getRatio(eImg);
+
+                                    eImg.resize(ratio.w, ratio.h)
+                                    this.hasResized = true;
+                                }
+
+                                eImg.write(out, () => {
+                                    this.hasConverted = true;
+
+                                    callback(path);
+                                });
+                            } else {
+                                console.log(err2);
+                                callback(false);
+                            }
+                        })
+                    }).catch(err1 => {
+                        console.log(err1);
                         callback(false);
-                    }
+                    });
                 })
-            }).catch(err0 => {
-                callback(false);
             });
-        })
+        }).catch(err0 => {
+            console.log(err0);
+            callback(false);
+        });
+    }
+
+    genProcessID() {
+        let t = "";
+        let p = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        
+        for(var i=0; i<5; i++){
+            t += p.charAt(Math.floor(Math.random() * p.length));
+        }
+        
+        return t;
+    }
+
+    getRatio(img) {
+        let ratio = {
+            w: img.getWidth(),
+            h: img.getHeight()
+        };
+    
+        let w = this.options.width || 185;
+        let h = w * (ratio.h / ratio.w);
+
+        return {
+            w: w,
+            h: h
+        }
     }
 }
 

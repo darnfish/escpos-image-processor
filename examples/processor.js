@@ -5,5 +5,9 @@ const processor = new ESCPOSImageProcessor({
 });
 
 processor.convert("./dog.jpg", "./processed.png", path => {
-    processor.print(device, printer);
+    if(path) {
+        console.log(`Processed image saved to ${path}`);
+    } else {
+        console.log("An Error Occurred");
+    }
 });

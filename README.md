@@ -15,7 +15,8 @@ const ESCPOSImageProcessor = require("escpos-image-processor");
 
 // Create an instance of the class
 const processor = new ESCPOSImageProcessor({
-    width: 185 /* optional, defaults to 185 (default 40mm printer roll width in px) */
+    width: 185, /* optional, defaults to 185 (default 40mm printer roll width in px) */
+    quality: "best" /* optional, defaults to "best" (slowest). another option is "good", which is faster but produces worse results */
 });
 
 // Put the path to your image in the first parameter (".in.png") and put the location where the image should be saved in the second parameter ("./processed.png").
@@ -40,7 +41,8 @@ const printer = new escpos.Printer(device);
 const ESCPOSImageProcessor = require("escpos-image-processor");
 
 const processor = new ESCPOSImageProcessor({
-    width: 185
+    width: 185,
+    quality: "best"
 });
 
 processor.convert("./in.png", "./processed.png", path => {
