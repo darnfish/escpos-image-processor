@@ -96,7 +96,7 @@ class ESCPOSImageProcessor {
                                 eImg.write(out, () => {
                                     this.hasConverted = true;
 
-                                    callback(path);
+                                    callback(out);
                                 });
                             } else {
                                 console.log(err2);
