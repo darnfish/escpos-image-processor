@@ -6,6 +6,7 @@ A Node.JS program that turns an image from a path into an escpos-printable image
 `escpos-image-processor` is available through NPM:
 
 ```npm install escpos-image-processor --save```
+```yarn add escpos-image-processor```
 
 ## Usage
 
