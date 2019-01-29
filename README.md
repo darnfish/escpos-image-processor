@@ -20,14 +20,14 @@ const processor = new ESCPOSImageProcessor({
 });
 
 // Put the path to your image in the first parameter (".in.png") and put the location where the image should be saved in the second parameter ("./processed.png").
-processor.convert("./in.png", "./processed.png", path => {
+processor.convert("./in.png", "./processed.png").then(path => {
     // The callback will return the path if all went well, if there was an error it will return 'false'.
     if(path) {
         console.log(`Processed image saved to ${path}`);
     } else {
         console.log("An Error Occurred");
     }
-});
+}).catch(error => console.error(error));
 ```
 ## Usage with `escpos`
 
@@ -45,13 +45,12 @@ const processor = new ESCPOSImageProcessor({
     quality: "best"
 });
 
-processor.convert("./in.png", "./processed.png", path => {
+processor.convert("./in.png", "./processed.png").then(path => {
     if(path) {
         console.log(`Processed image saved to ${path}, printing...`);
 
         processor.print(device, printer);
     } else {
         console.log("An Error Occurred");
-    }
-});
+}).catch(error => console.error(error));
 ```

@@ -82,33 +82,28 @@ class ESCPOSImageProcessor {
                                 }
                             }, (err2, eImg) => {
                                 fs.unlinkSync(edgePath);
-                                if(!err2) {
-                                    eImg.invert();
 
-                                    if(this.options.quality == "best" || !this.hasResized) {
-                                        let ratio = this.getRatio(eImg);
+                                if(err2) { return reject(err2); }
 
-                                        eImg.resize(ratio.w, ratio.h)
-                                        this.hasResized = true;
-                                    }
+                                eImg.invert();
 
-                                    eImg.write(out, () => {
-                                        this.hasConverted = true;
+                                if(this.options.quality == "best" || !this.hasResized) {
+                                    let ratio = this.getRatio(eImg);
 
-                                        resolve(out);
-                                    });
-                                } else {
-                                    reject(err2);
+                                    eImg.resize(ratio.w, ratio.h)
+                                    this.hasResized = true;
                                 }
+
+                                eImg.write(out, () => {
+                                    this.hasConverted = true;
+
+                                    resolve(out);
+                                });
                             })
-                        }).catch(err1 => {
-                            reject(err1);
-                        });
+                        }).catch(err1 => reject(err1));
                     })
                 });
-            }).catch(err0 => {
-                reject(err0);
-            });
+            }).catch(err0 => reject(err0));
         })
     }
 
