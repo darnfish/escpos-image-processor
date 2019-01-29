@@ -45,45 +45,46 @@ class ESCPOSImageProcessor {
      * 
      * @param {String} path The input path for the image.
      * @param {String} out The output path for the processed image.
-     * @param {Function} callback The callback for the image, with a `path` parameter.
      */
-    convert(path, out, callback) {
-        this.path = out;
-        this.hasResized = false;
+    convert(path, out) {
+        return new Promise((resolve, reject) => {
+            this.path = out;
+            this.hasResized = false;
 
-        Jimp.read(path).then(oImg => {
+            Jimp.read(path).then(oImg => {
+                if(this.options.quality == "good") {
+                    let ratio = this.getRatio(oImg);
 
-            if(this.options.quality == "good") {
-                let ratio = this.getRatio(oImg);
+                    oImg.resize(ratio.w, ratio.h);
+                    this.hasResized = true;
+                }
 
-                oImg.resize(ratio.w, ratio.h);
-                this.hasResized = true;
-            }
+                const orgPath = `./${this.processID}-org.png`;
+                oImg.write(orgPath, () => {
+                    Image.load(orgPath).then(img => {
+                        fs.unlinkSync(orgPath);
+                        const threshold = 30;
+            
+                        const edge = cannyEdgeDetector(img.grey(), {
+                            lowThreshold: threshold,
+                            highThreshold: threshold,
+                            gaussianBlur: threshold / 10
+                        });
+                    
+                        const edgePath = `./${this.processID}-edges.png`;
+                        edge.save(edgePath).then(() => {
+                            replaceColor({
+                                image: edgePath,
+                                colors: {
+                                    type: "hex",
+                                    targetColor: "#000000",
+                                    replaceColor: "#00000000"
+                                }
+                            }, (err2, eImg) => {
+                                fs.unlinkSync(edgePath);
 
-            const orgPath = `./${this.processID}-org.png`;
-            oImg.write(orgPath, () => {
-                Image.load(orgPath).then(img => {
-                    fs.unlinkSync(orgPath);
-                    const threshold = 30;
-        
-                    const edge = cannyEdgeDetector(img.grey(), {
-                        lowThreshold: threshold,
-                        highThreshold: threshold,
-                        gaussianBlur: threshold / 10
-                    });
-                
-                    const edgePath = `./${this.processID}-edges.png`;
-                    edge.save(edgePath).then(() => {
-                        replaceColor({
-                            image: edgePath,
-                            colors: {
-                                type: "hex",
-                                targetColor: "#000000",
-                                replaceColor: "#00000000"
-                            }
-                        }, (err2, eImg) => {
-                            fs.unlinkSync(edgePath);
-                            if(!err2) {
+                                if(err2) { return reject(err2); }
+
                                 eImg.invert();
 
                                 if(this.options.quality == "best" || !this.hasResized) {
@@ -96,23 +97,14 @@ class ESCPOSImageProcessor {
                                 eImg.write(out, () => {
                                     this.hasConverted = true;
 
-                                    callback(out);
+                                    resolve(out);
                                 });
-                            } else {
-                                console.log(err2);
-                                callback(false);
-                            }
-                        })
-                    }).catch(err1 => {
-                        console.log(err1);
-                        callback(false);
-                    });
-                })
-            });
-        }).catch(err0 => {
-            console.log(err0);
-            callback(false);
-        });
+                            })
+                        }).catch(err1 => reject(err1));
+                    })
+                });
+            }).catch(err0 => reject(err0));
+        })
     }
 
     genProcessID() {
