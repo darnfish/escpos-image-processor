@@ -55,3 +55,7 @@ processor.convert("./in.png", "./processed.png").then(path => {
         console.log("An Error Occurred");
 }).catch(error => console.error(error));
 ```
+
+## License
+
+`escpos-image-processor` is licensed under the MIT License.
