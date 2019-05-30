@@ -2,7 +2,7 @@
 A Node library that converts an image from a saved path into an escpos-printable image.
 
 ## Installation
-This library is available on the [NPM registry](https://npmjs.org). To install, run
+This library is available on the [NPM registry](https://www.npmjs.com/package/@printurmessages/escpos-image-processor). To install, run
 
 ```
 npm install @printurmessages/escpos-image-processor --save

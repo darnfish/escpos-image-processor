@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "gulp build",
-    "deploy": "yarn build && cd dist && yarn publish --access public"
+    "deploy": "bash ./deploy.sh"
   },
   "dependencies": {
     "@babel/core": "^7.2.2",

@@ -1,6 +1,6 @@
 {
   "name": "@printurmessages/escpos-image-processor",
-  "version": "1.0.8",
+  "version": "1.1.1",
   "description": "A Node.JS program that turns an image (png or jpg) into an escpos-printable image.",
   "main": "index.js",
   "scripts": {
