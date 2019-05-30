@@ -1,0 +1,30 @@
+{
+  "name": "@printurmessages/escpos-image-processor",
+  "version": "1.0.8",
+  "description": "A Node.JS program that turns an image (png or jpg) into an escpos-printable image.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/printurmessages/escpos-image-processor.git"
+  },
+  "keywords": [
+    "escpos",
+    "image",
+    "escpos-image"
+  ],
+  "author": "William Gibson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/printurmessages/escpos-image-processor/issues"
+  },
+  "homepage": "https://github.com/printurmessages/escpos-image-processor#readme",
+  "dependencies": {
+    "canny-edge-detector": "^1.0.0",
+    "image-js": "^0.21.4",
+    "jimp": "^0.5.4",
+    "replace-color": "^2.0.0"
+  }
+}
