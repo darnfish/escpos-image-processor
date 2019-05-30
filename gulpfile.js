@@ -3,7 +3,10 @@ const terser = require('gulp-terser')
 const babel = require('gulp-babel')
 
 const paths = {
-    src: 'src/*.json',
+    src: [
+        'src/*.json',
+        '*.md'
+    ],
     srcJS: 'src/index.js',
 
     dist: 'dist/',
