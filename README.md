@@ -1,5 +1,5 @@
 # @printurmessages/escpos-image-processor
-A Node library that converts an image from a saved path into an escpos-printable image.
+A library that converts an image into an escpos-printable image
 
 ## Installation
 This library is available on the [NPM registry](https://www.npmjs.com/package/@printurmessages/escpos-image-processor). To install, run
@@ -27,11 +27,10 @@ const processor = new ESCPOSImageProcessor({
 // Put the path to your image in the first parameter ('.in.png') and put the location where the image should be saved in the second parameter ('./processed.png').
 processor.convert('./in.png', './processed.png').then(path => {
     // The callback will return the path if all went well, if there was an error it will return 'false'.
-    if(path) {
+    if(path)
         console.log(`Processed image saved to ${path}`)
-    } else {
+    else
         console.log('An Error Occurred')
-    }
 }).catch(error => console.error(error))
 ```
 ## Usage with `escpos`
@@ -54,7 +53,7 @@ processor.convert('./in.png', './processed.png').then(path => {
         console.log(`Processed image saved to ${path}, printing...`)
 
         processor.print(device, printer)
-    } else {
+    } else
         console.log('An Error Occurred')
 }).catch(error => console.error(error))
 ```
